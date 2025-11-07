@@ -91,7 +91,7 @@ class BaseService:
         instance = cls.get(record_id)
         db.session.delete(instance)
         db.session.commit()
-        return instance
+        return {"message": f"{cls.model.__tablename__.capitalize()[:-1]} deleted successfully"}
 
     @classmethod
     def list(cls, filters=None, page=None, per_page=50):
@@ -110,6 +110,10 @@ class BaseService:
             for attr, value in filters.items():
                 if attr not in cls.allowed_filters:
                     abort(400, message=f"Invalid filter: {attr}")
+
+                if value is None or (isinstance(value, str) and not value.strip()):
+                    abort(400, message=f"Filter '{attr}' cannot be empty")
+
                 query = query.filter(getattr(cls.model, attr) == value)
 
         if page:
@@ -123,5 +127,9 @@ class BaseService:
                 'page': page,
                 'per_page': per_page
             }
+        results = db.session.scalars(query).all()
 
-        return db.session.scalars(query).all()
+        if filters and not results:
+            abort(404, message=f"No {cls.model.__tablename__} found matching the provided filters")
+
+        return results

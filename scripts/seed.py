@@ -5,7 +5,6 @@ from models.filtering_policy import FilteringPolicy
 from models.rules import Rules
 from ressources.auth.constant import UserRole
 
-
 def seed_database(app):
     with app.app_context():
         db.drop_all()

@@ -9,4 +9,4 @@ class Firewalls(db.Model):
     location: Mapped[str] = mapped_column(nullable=True)
     ip_address: Mapped[str] = mapped_column(nullable=True)
     filtering_policies: Mapped[List['FilteringPolicy']] = relationship(backref='firewall', cascade='all, delete-orphan'
-                                                                       , lazy='selectin')
+                                                                       , lazy='select')

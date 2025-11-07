@@ -11,7 +11,7 @@ class FilteringPolicy(db.Model):
     action: Mapped[str] = mapped_column(default='allow')
     enabled: Mapped[bool] = mapped_column(default=True)
     firewall_id: Mapped[int] = mapped_column(db.ForeignKey('firewalls.id', ondelete='CASCADE'))
-    rules: Mapped[List['Rules']] = relationship(backref='filtering_policy', cascade='all, delete-orphan')
+    rules: Mapped[List['Rules']] = relationship(backref='filtering_policy', cascade='all, delete-orphan',  lazy='select')
 
     def to_dict(self)-> dict:
         return {
