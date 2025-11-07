@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 from flask_smorest import Api
 from config import Config, TestingConfig
 from extensions import db, jwt
@@ -22,6 +22,9 @@ def create_app(config_name="default"):
     jwt.init_app(app)
 
     api = Api(app)
+    @app.route("/")
+    def root():
+        return redirect("/docs")
 
     @app.cli.command('populate-db')
     def seed_db_command():
@@ -50,6 +53,6 @@ def create_app(config_name="default"):
 
 if __name__ == '__main__':
     app = create_app()
-    app.run()
+    app.run(host="0.0.0.0", port=8080)
 
 
