@@ -4,7 +4,7 @@ from flask_smorest import Blueprint
 
 from ressources.auth.decorators import admin_required, user_or_admin_required
 from ressources.common.schemas import Error400Schema, Error409Schema, Error404Schema
-from ressources.policy.schema import PolicySchema, PolicyArgsSchema, PolicyToggleResponseSchema
+from ressources.policy.schema import PolicySchema, PolicyArgsSchema, PolicyToggleResponseSchema, PaginatedPolicySchema
 from ressources.policy.service import list_policies, create_policy, delete_policy
 
 policy = Blueprint("policy", __name__, url_prefix="/policy", description="Policy management")
@@ -14,10 +14,15 @@ class PolicyCollection(MethodView):
     @jwt_required()
     @user_or_admin_required
     @policy.arguments(PolicyArgsSchema, location="query")
-    @policy.response(200, PolicySchema(many=True))
+    @policy.response(200, PolicySchema(many=True), description="List of policies")
+    @policy.response(200, PaginatedPolicySchema, description="Paginated list of policies")
     @policy.alt_response(400, schema=Error400Schema, description="Invalid filter")
     def get(self, args):
-        return list_policies(args)
+        page = args.get('page')
+        per_page = args.get('per_page', 2)
+        filters = {k: v for k, v in args.items() if k not in ['page', 'per_page']}
+
+        return list_policies(filters=filters, page=page, per_page=per_page)
 
     @jwt_required()
     @admin_required

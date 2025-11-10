@@ -100,8 +100,8 @@ def test_delete_not_found(app):
 
 
 def test_list_all(app):
-    ObjectTestService.create(name="A")
-    ObjectTestService.create(name="B")
+    ObjectTestService.create(name="name1")
+    ObjectTestService.create(name="name2")
 
     result = ObjectTestService.list()
     assert isinstance(result, list)
@@ -109,10 +109,10 @@ def test_list_all(app):
 
 
 def test_list_with_valid_filter(app):
-    ObjectTestService.create(name="FilterMe")
-    results = ObjectTestService.list(filters={"name": "FilterMe"})
+    ObjectTestService.create(name="filter")
+    results = ObjectTestService.list(filters={"name": "filter"})
     assert len(results) == 1
-    assert results[0].name == "FilterMe"
+    assert results[0].name == "filter"
 
 
 def test_list_with_invalid_filter(app):
@@ -122,10 +122,17 @@ def test_list_with_invalid_filter(app):
 
 
 def test_list_with_pagination(app):
-    for i in range(12):
-        ObjectTestService.create(name=f"fw{i}")
+    ObjectTestService.create(name="name1")
+    ObjectTestService.create(name="name2")
+    ObjectTestService.create(name="name3")
 
-    page_1 = ObjectTestService.list(page=1, per_page=5)
-    assert page_1["page"] == 1
-    assert len(page_1["items"]) == 5
-    assert page_1["total"] >= 10
+    result = ObjectTestService.list(page=1, per_page=2)
+
+    assert isinstance(result, dict)
+    assert 'items' in result
+    assert 'total' in result
+    assert 'page' in result
+    assert 'per_page' in result
+    assert len(result['items']) == 2
+    assert result['total'] == 3
+    assert result['page'] == 1

@@ -94,7 +94,7 @@ class BaseService:
         return {"message": f"{cls.model.__tablename__.capitalize()[:-1]} deleted successfully"}
 
     @classmethod
-    def list(cls, filters=None, page=None, per_page=50):
+    def list(cls, filters=None, page=None, per_page=2):
         """
         Lists records with optional filtering and pagination.
 
@@ -116,7 +116,7 @@ class BaseService:
 
                 query = query.filter(getattr(cls.model, attr) == value)
 
-        if page:
+        if page is not None:
             per_page = min(per_page, 100)
             total = db.session.scalar(db.select(db.func.count()).select_from(query.subquery()))
             items = db.session.scalars(query.offset((page - 1) * per_page).limit(per_page)).all()

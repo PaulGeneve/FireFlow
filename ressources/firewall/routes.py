@@ -4,7 +4,8 @@ from flask.views import MethodView
 
 from ressources.auth.decorators import admin_required, user_or_admin_required
 from ressources.common.schemas import ErrorSchema, Error400Schema, Error409Schema, Error404Schema
-from ressources.firewall.schema import FirewallSchema, FirewallArgsSchema, FirewallStatisticsResponseSchema
+from ressources.firewall.schema import FirewallSchema, FirewallArgsSchema, FirewallStatisticsResponseSchema, \
+    PaginatedFirewallSchema
 from ressources.firewall.service import create_firewall, list_firewalls, delete_firewall, get_firewall
 from ressources.firewall.service import get_firewall_statistics
 
@@ -16,11 +17,23 @@ class FirewallsCollection(MethodView):
     @jwt_required()
     @user_or_admin_required
     @firewall.arguments(FirewallArgsSchema, location="query")
-    @firewall.response(200, FirewallSchema(many=True))
+    @firewall.response(200, FirewallSchema(many=True), description="List of firewalls")
+    @firewall.response(200, PaginatedFirewallSchema, description="Paginated list of firewalls")
     @firewall.alt_response(400, schema=Error400Schema, description="Invalid filter")
     @firewall.alt_response(404, schema=Error404Schema, description="No results")
     def get(self, args):
-        return list_firewalls(filters=args)
+        print(f"DEBUG - args brut: {args}")
+        print(f"DEBUG - 'page' in args: {'page' in args}")
+        print(f"DEBUG - args.get('page'): {args.get('page')}")
+        page = args.get('page')
+        per_page = args.get('per_page') or 10
+        filters = {k: v for k, v in args.items() if k not in ['page', 'per_page']}
+
+        print(f"DEBUG - page={page}, per_page={per_page}, filters={filters}")
+        response = list_firewalls(filters=filters, page=page, per_page=per_page)
+        print(f"DEBUG - result type: {type(response)}")
+
+        return response
 
     @jwt_required()
     @admin_required

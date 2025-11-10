@@ -9,10 +9,29 @@ class FirewallSchema(Schema):
     filtering_policies = fields.List(fields.Nested(PolicySchema), dump_only=True)
 
 
-class FirewallArgsSchema(Schema):
+class FirewallFiltersSchema(Schema):
     id = fields.Integer(dump_only=True)
     name = fields.Str(required=False)
     location = fields.Str(required=False)
+
+class FirewallArgsSchema(FirewallFiltersSchema):
+    page = fields.Int(
+        required=False,
+        load_default=1,
+        metadata={'description': 'Page number for pagination'}
+    )
+    per_page = fields.Int(
+        required=False,
+        load_default=5,
+        metadata={'description': 'Items per page (max 100)'},
+        validate=lambda x: 1 <= x <= 100
+    )
+
+class PaginatedFirewallSchema(Schema):
+    items = fields.List(fields.Nested(FirewallSchema))
+    total = fields.Int(metadata={'description': 'Total number of items'})
+    page = fields.Int(metadata={'description': 'Current page number'})
+    per_page = fields.Int(metadata={'description': 'Items per page'})
 
 
 class PolicyStatisticsSchema(Schema):

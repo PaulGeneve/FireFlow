@@ -9,7 +9,7 @@ from utils import check_allowed_filter
 
 class FirewallService(BaseService):
     model = Firewalls
-    allowed_filters = {'id', 'name'}
+    allowed_filters = {'id', 'name', 'location', 'ip_address'}
 
 
 def create_firewall(**data):

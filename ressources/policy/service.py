@@ -7,7 +7,7 @@ from ressources.firewall.service import get_firewall
 
 class PolicyService(BaseService):
     model = FilteringPolicy
-    allowed_filters = {'id', 'name', 'firewall_id'}
+    allowed_filters = {'id', 'name', 'firewall_id', 'enabled', 'action'}
 
 
 def create_policy(**data):

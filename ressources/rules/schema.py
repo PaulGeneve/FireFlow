@@ -15,6 +15,33 @@ class RuleArgsSchema(Schema):
     port = fields.Str(required=False)
     filtering_policy_id = fields.Int(required=False)
 
+class RuleFilterSchema(Schema):
+    """Schéma contenant uniquement les filtres métier"""
+    name = fields.Str(required=False)
+    source = fields.Str(required=False)
+    destination = fields.Str(required=False)
+    filtering_policy_id = fields.Int(required=False)
+
+class RuleArgsSchema(RuleFilterSchema):
+    """Schéma qui hérite des filtres et ajoute la pagination"""
+    page = fields.Int(
+        required=False,
+        load_default=1,
+        metadata={'description': 'Page number for pagination'}
+    )
+    per_page = fields.Int(
+        required=False,
+        load_default=10,
+        metadata={'description': 'Items per page (max 100, default 2)'}
+    )
+
+class PaginatedRuleSchema(Schema):
+    items = fields.List(fields.Nested(RuleSchema))
+    total = fields.Int(metadata={'description': 'Total number of items'})
+    page = fields.Int(metadata={'description': 'Current page number'})
+    per_page = fields.Int(metadata={'description': 'Items per page'})
+
+
 @validates('source')
 def validate_source(self, value):
     """Valide le format CIDR"""

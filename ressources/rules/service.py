@@ -10,7 +10,7 @@ from ressources.policy.service import get_policy
 
 class RuleService(BaseService):
     model = Rules
-    allowed_filters = {'id', 'name', 'policy_id'}
+    allowed_filters = {'id', 'name', 'policy_id', 'source', 'destination'}
     unique_field = 'name'
 
 
