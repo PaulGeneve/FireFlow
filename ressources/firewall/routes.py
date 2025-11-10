@@ -22,17 +22,10 @@ class FirewallsCollection(MethodView):
     @firewall.alt_response(400, schema=Error400Schema, description="Invalid filter")
     @firewall.alt_response(404, schema=Error404Schema, description="No results")
     def get(self, args):
-        print(f"DEBUG - args brut: {args}")
-        print(f"DEBUG - 'page' in args: {'page' in args}")
-        print(f"DEBUG - args.get('page'): {args.get('page')}")
         page = args.get('page')
         per_page = args.get('per_page') or 10
         filters = {k: v for k, v in args.items() if k not in ['page', 'per_page']}
-
-        print(f"DEBUG - page={page}, per_page={per_page}, filters={filters}")
         response = list_firewalls(filters=filters, page=page, per_page=per_page)
-        print(f"DEBUG - result type: {type(response)}")
-
         return response
 
     @jwt_required()

@@ -49,7 +49,6 @@ def get_firewall_statistics(firewall_id):
     if not fw:
         abort(404, message="Firewall not found")
 
-    # Calculs des statistiques
     total_policies = len(fw.filtering_policies)
     active_policies = sum(1 for p in fw.filtering_policies if p.enabled)
     inactive_policies = total_policies - active_policies
